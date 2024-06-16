@@ -1,0 +1,15 @@
+{
+    "encoding": "utf-8",
+    "working_dir": "$file_path",
+    "shell_cmd": "python \"$file\" && java \"$file_base_name\"",
+    "file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+    "selector": "source.py",
+
+    "variants": 
+    [
+        {    
+            "name": "Run",
+            "shell_cmd": "start cmd /c \"python \"$file_base_name\" && pause\""
+        }
+    ]
+}
