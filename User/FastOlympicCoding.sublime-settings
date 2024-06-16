@@ -11,4 +11,6 @@
 
 	"close_sidebar": false,
 	"tests_file_suffix": "__tests",
+	"lint_enabled": false,
+	"cpp_complete_enabled": false,
 }

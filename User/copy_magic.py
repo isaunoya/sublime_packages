@@ -3,13 +3,17 @@ import sublime_plugin
 import re
 from pathlib import Path
 
+# 设置库路径
 lib_path = Path("D:\\MSYS2\\mingw64\\include\\c++\\13.2.0\\x86_64-w64-mingw32")
 
-atcoder_include = re.compile('#include\s*["<](atcoder/[a-z_]*(|.hpp))[">]\s*')
-include_guard = re.compile('#.*ATCODER_[A-Z_]*_HPP')
+# 正则表达式用于匹配 #include 指令和 include guard
+atcoder_include = re.compile(r'#include\s*["<](atcoder/[a-z_]*(|.hpp))[">]\s*')
+include_guard = re.compile(r'#.*ATCODER_[A-Z_]*_HPP')
 
-def dfs(f: str):
-    defined = set()
+# 递归查找和扩展 #include 指令
+def dfs(f: str, defined=None):
+    if defined is None:
+        defined = set()
     result = []
     if f in defined:
         return result
@@ -20,10 +24,9 @@ def dfs(f: str):
         for line in s.splitlines():
             if include_guard.match(line):
                 continue
-
             m = atcoder_include.match(line)
             if m:
-                result.extend(dfs(m.group(1)))
+                result.extend(dfs(m.group(1), defined))
                 continue
             result.append(line)
     except FileNotFoundError:
@@ -31,24 +34,32 @@ def dfs(f: str):
 
     return result
 
+# 自定义复制命令，扩展剪贴板内容
 class CopyMagicCommand(sublime_plugin.TextCommand):
     def run(self, edit):
-        selected_text = "\n".join([self.view.substr(region) for region in self.view.sel() if not region.empty()])
-        sublime.set_clipboard(selected_text.strip())
-        self.expander_operation()
+        # 获取当前选择的文本
+        selected_text = self.view.substr(self.view.sel()[0])
+        # 扩展剪贴板内容
+        expanded_text = self.expand_clipboard(selected_text)
+        # 将扩展后的内容设置到剪贴板
+        sublime.set_clipboard(expanded_text)
 
     def is_enabled(self):
-        return any(not sel.empty() for sel in self.view.sel())
+        return True
 
-    def expander_operation(self):
-        s = sublime.get_clipboard()
+    def expand_clipboard(self, clipboard_content):
         result = []
-        for line in s.splitlines():
+        for line in clipboard_content.splitlines():
             m = atcoder_include.match(line)
             if m:
                 result.extend(dfs(m.group(1)))
                 continue
             result.append(line)
+        return '\r\n'.join(result) + '\r\n'
 
-        output = '\n'.join(result) + '\n'
-        sublime.set_clipboard(output)
+# 每次复制操作时触发扩展剪贴板内容的命令
+class EventListener(sublime_plugin.EventListener):
+    def on_text_command(self, view, command_name, args):
+        if command_name == "copy":
+            view.run_command("copy_magic")
+            return ("noop")
