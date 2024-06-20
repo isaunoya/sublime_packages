@@ -1,5 +1,4 @@
 [
 	{ "keys": ["ctrl+shift+c"], "command": "open_terminal" },
 	{ "keys": ["f11"], "command": "build"},
-	// { "keys": ["ctrl+c"], "command": "copy_magic" },
 ]

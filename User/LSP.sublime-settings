@@ -1,3 +1,21 @@
 // Settings in here override those in "LSP/LSP.sublime-settings"
 {
+    "clients": {
+        "clangd": {
+            "command": ["clangd"],
+            "enabled": true,
+            "languages": [
+                {
+                    "languageId": "cpp",
+                    "scopes": ["source.cpp"],
+                    "syntaxes": ["Packages/C++/C++.sublime-syntax"]
+                },
+                {
+                    "languageId": "c",
+                    "scopes": ["source.c"],
+                    "syntaxes": ["Packages/C++/C.sublime-syntax"]
+                }
+            ]
+        }
+    }
 }
