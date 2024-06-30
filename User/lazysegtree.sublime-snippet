@@ -1,14 +1,14 @@
 <snippet>
     <content><![CDATA[
 // #include <atcoder/lazysegtree>
-// using S = int;
-// using F = int;
-// S e() { return 0; }
-// S op(S a, S b) { return a + b; }
-// S mapping(F add, S a) { return a + add; }
+// using S = array<long long, 2>;
+// using F = long long;
+// S e() { return {0, 0}; }
+// S op(S a, S b) { return {a[0] + b[0], a[1] + b[1]}; }
+// S mapping(F add, S a) { return {a[0] + add * a[1], a[1]}; }
 // F composition(F a, F b) { return a + b; }
-// F id() { return 0;}
-// atcoder::lazy_segtree<S, op, e, F,mapping, composition, id> st;
+// F id() { return 0; }
+// atcoder::lazy_segtree<S, op, e, F,mapping, composition, id> st(a);
 ]]></content>
     <tabTrigger>lazysegtree</tabTrigger>
     <scope>source.c++, source.cpp</scope>

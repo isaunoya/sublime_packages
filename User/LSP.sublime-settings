@@ -17,5 +17,7 @@
                 }
             ]
         }
-    }
+    },
+    // "lsp_format_on_paste": true,
+    // "lsp_format_on_save": true,
 }
