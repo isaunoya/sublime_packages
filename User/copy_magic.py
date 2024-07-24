@@ -2,35 +2,35 @@ import sublime
 import sublime_plugin
 import re
 from pathlib import Path
+from typing import List
 
 # 设置库路径
 lib_path = Path("D:\\MSYS2\\mingw64\\include\\c++\\13.2.0\\x86_64-w64-mingw32")
 
 # 正则表达式用于匹配 #include 指令和 include guard
-atcoder_include = re.compile(r'#include\s*["<](atcoder/[a-z_]*(|.hpp))[">]\s*')
-include_guard = re.compile(r'#.*ATCODER_[A-Z_]*_HPP')
+atcoder_include = re.compile('#include\s*["<](atcoder/[a-z_]*(|.hpp))[">]\s*')
+include_guard = re.compile('#.*ATCODER_[A-Z_]*_HPP')
+
 
 # 递归查找和扩展 #include 指令
-def dfs(f: str, defined=None):
-    if defined is None:
-        defined = set()
-    result = []
-    if f in defined:
-        return result
-    defined.add(f)
+defined = set()
 
-    try:
-        s = open(str(lib_path / f)).read()
-        for line in s.splitlines():
-            if include_guard.match(line):
-                continue
-            m = atcoder_include.match(line)
-            if m:
-                result.extend(dfs(m.group(1), defined))
-                continue
-            result.append(line)
-    except FileNotFoundError:
-        print(f"File {f} not found.")
+def dfs(f: str) -> List[str]:
+    global defined
+    if f in defined:
+        return []
+
+    result = []
+    defined.add(f)
+    s = open(str(lib_path / f)).read()
+    for line in s.splitlines():
+        if include_guard.match(line):
+            continue
+        m = atcoder_include.match(line)
+        if m:
+            result.extend(dfs(m.group(1)))
+            continue
+        result.append(line)
 
     return result
 
@@ -48,6 +48,7 @@ class CopyMagicCommand(sublime_plugin.TextCommand):
         return True
 
     def expand_clipboard(self, clipboard_content):
+        defined.clear()
         result = []
         for line in clipboard_content.splitlines():
             m = atcoder_include.match(line)
